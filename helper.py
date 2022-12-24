@@ -1,5 +1,6 @@
 import random
 import numpy as np
+from fastapi.responses import JSONResponse
 
 
 class Helper:
@@ -28,39 +29,43 @@ class Helper:
         question_id = self.get_question_id()
         self.db[question_id] = ru_word
 
-        return {"question_id": question_id, "variance": var, "english": en_word}
-
+        return JSONResponse(content={"question_id": question_id, "variance": var, "english": en_word},
+                            media_type="application/json")
 
     def generate_question_letter(self):
-        en_word = list(random.choice(list(self.dictionary.keys())))
-        letter_ind = random.randint(0, len(en_word) - 1)
+        en_word = random.choice(list(self.dictionary.keys()))
+        index = random.randint(0, len(en_word))
+        correct_answer = en_word[index]
+
         question_id = self.get_question_id()
-        self.db[question_id] = en_word[letter_ind]
-        en_word[letter_ind] = '*'
-        en_word = ''.join(en_word)
+        self.db[question_id] = correct_answer
 
-        return {"question_id": question_id, "skip_letter": en_word}
+        list_en = list(en_word)
+        list_en[index] = '*'
+        join_en_word = "".join(list_en)
 
+        return JSONResponse(content={"question_id": question_id, "en_word": join_en_word},
+                            media_type="application/json")
 
     #   =================== CHECK ======================
 
     def check_answer(self, question_id, answer):
         if question_id in self.db:
             correct_answer = self.db[question_id]
-            return {"is_correct": correct_answer == answer}
+            return JSONResponse(content={"is_correct": correct_answer == answer},
+                                media_type="application/json")
         else:
-            return {"is_correct": False, "error": "entered question_id not existing"}
+            return JSONResponse(status_code=400, content={"error": "entered question_id not existing"})
 
     #   =================== READ ======================
 
     def get_correct_result(self, question_id):
         if question_id in self.db:
             correct_answer = self.db[question_id]
-            return {"correct_answer": correct_answer}
+            return JSONResponse(content={"correct_answer": correct_answer},
+                                media_type="application/json")
         else:
-            return {"error": "entered question_id not existing"}
-
-
+            return JSONResponse(status_code=404, content={"error": "entered question_id not existing"})
 
     def get_question_id(self):
         self.question_id += 1

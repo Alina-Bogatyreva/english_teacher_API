@@ -3,10 +3,16 @@ import numpy as np
 from fastapi.responses import JSONResponse
 
 
+import random
+import numpy as np
+from fastapi.responses import JSONResponse, FileResponse, RedirectResponse
+
+
 class Helper:
     def __init__(self):
         self.question_id = 1000
         self.db = {}
+        self.db_score = {}
 
         with open("db_ru_en.txt", encoding='utf-8') as f:
             data = f.readlines()
@@ -15,6 +21,12 @@ class Helper:
         for line in data:
             ru, en = line.split("-")
             self.dictionary[en.strip()] = ru.strip()
+
+    #   =================== GENERATE ======================
+
+    def login(self, email):
+        self.db_score[email] = 0
+        return JSONResponse(status_code=200)
 
     #   =================== GENERATE ======================
 

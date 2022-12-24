@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Path
 import uvicorn
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, RedirectResponse
 
 from helper import Helper
-from models import AnswerRequestBody, LetterRequestBody
+from models import AnswerRequestBody, LetterRequestBody, UserLoginBody
 
 # Endpoints:
 # word/guess,   word/check,    word/result
@@ -49,10 +49,22 @@ def guess_letter_result(question_id: int = Path(1000, gt=0, description="questio
 def guess_letter_check(user_answer: LetterRequestBody):
     return helper.check_answer(user_answer.question_id, user_answer.letter)
 
+#   =================== AUTH ======================
+
+
+@app.get("/auth/login/{email}", tags=['auth'])
+def login(email):
+    return helper.login(email)
+
 
 #   =================== RUN ======================
 
 @app.get("/")
+def root():
+    return FileResponse("public/auth.html")
+
+
+@app.get("/play")
 def root():
     return FileResponse("public/index.html")
 

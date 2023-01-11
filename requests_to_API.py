@@ -20,6 +20,17 @@ domain = "http://127.0.0.1:8000"
 # r = requests.request("POST", f"{domain}/letter/check", json={'question_id': 1002, "skip_letter": "p"})
 # print(r.json())
 
-r = requests.request('GET', domain+"/letter/result/1002")
-print(r.status_code)
-print(r.json())
+# r = requests.request('GET', domain+"/letter/result/1002")
+# print(r.status_code)
+# print(r.json())
+
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
